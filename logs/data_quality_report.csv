@@ -1,7 +1,7 @@
 check,passed,detail,checked_at
-no_duplicates,True,ok,2026-11-07 02:51:54
-no_missing_values,True,ok,2026-11-07 02:51:54
-values_in_range,True,ok,2026-11-07 02:51:54
-no_big_gaps,True,ok,2026-11-07 02:51:54
-no_big_jumps,True,ok,2026-11-07 02:51:54
-data_is_fresh,True,ok,2026-11-07 02:51:54
+no_duplicates,True,ok,2026-11-10 11:45:13
+no_missing_values,True,ok,2026-11-10 11:45:13
+values_in_range,True,ok,2026-11-10 11:45:13
+no_big_gaps,True,ok,2026-11-10 11:45:13
+no_big_jumps,True,ok,2026-11-10 11:45:13
+data_is_fresh,True,ok,2026-11-10 11:45:13
