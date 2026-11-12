@@ -1,6 +1,12 @@
 import pandas as pd
 from ingest import fetch_series
-SERIES_IDS = ["V39079", "FXUSDCAD"]
+SERIES_IDS = [
+    "V39079",
+    "FXUSDCAD",
+    "V41690973",
+    "BD.CDN.10YR.DQ.YLD",
+    "STATIC_ATABLE_V35014A",
+]
 
 def build_table(series_ids,recent=300):
     frames = []
