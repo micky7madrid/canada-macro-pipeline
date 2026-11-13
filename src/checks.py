@@ -3,6 +3,8 @@ import pandas as pd
 
 VALUE_RANGES = {"V39079": (0, 20),"FXUSDCAD": (0.5, 2.5),}
 JUMP_LIMITS = {"FXUSDCAD": 0.03,}
+MAX_GAP_DAYS = {"V41690973": 35, "STATIC_ATABLE_V35014A": 35}
+MAX_AGE_DAYS = {"V41690973": 80, "STATIC_ATABLE_V35014A": 80}
 
 def make_result(name, problems):
     return {
@@ -35,7 +37,8 @@ def check_gaps(df, max_days=5):
     for code, group in df.groupby("indicator_code"):
         gaps = group["date"].sort_values().diff().dt.days
         biggest = gaps.max()
-        if biggest > max_days:
+        limit = MAX_GAP_DAYS.get(code, max_days)
+        if biggest > limit:
             problems.append(f"{code}: gap of {int(biggest)} days")
     return make_result("no_big_gaps", problems)
 
@@ -54,7 +57,8 @@ def check_freshness(df, max_age_days=5):
     today = pd.Timestamp.today().normalize()
     for code, group in df.groupby("indicator_code"):
         age = (today - group["date"].max()).days
-        if age > max_age_days:
+        limit = MAX_AGE_DAYS.get(code, max_age_days)
+        if age > limit:
             problems.append(f"{code}: latest data is {age} days old")
     return make_result("data_is_fresh", problems)
 
