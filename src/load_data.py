@@ -1,14 +1,14 @@
 import os
 import pyodbc
 from dotenv import load_dotenv
-
+import time
 from ingest import fetch_series
 from clean import build_table, SERIES_IDS
 
 load_dotenv()
 
 
-def get_connection():
+def get_connection(retries=1, wait=30):
     conn_str = (
         "Driver={ODBC Driver 18 for SQL Server};"
         f"Server=tcp:{os.environ['AZURE_SQL_SERVER']},1433;"
@@ -17,13 +17,20 @@ def get_connection():
         f"Pwd={os.environ['AZURE_SQL_PASSWORD']};"
         "Encrypt=yes;TrustServerCertificate=no;Connection Timeout=60;"
     )
-    return pyodbc.connect(conn_str)
+    for attempt in range(1, retries + 1):
+        try:
+            return pyodbc.connect(conn_str)
+        except pyodbc.Error:
+            if attempt == retries:
+                raise
+            print(f"Connection attempt {attempt} failed, retrying in {wait}s (database may be waking up)...")
+            time.sleep(wait)
 
 
 def load(df):
     df = df.dropna(subset=["value"])
 
-    conn = get_connection()
+    conn = get_connection(retries=4)
     cursor = conn.cursor()
 
     # Empty the tables so the load can be re-run safely
