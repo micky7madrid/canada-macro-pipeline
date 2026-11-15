@@ -123,12 +123,17 @@ WHERE d.full_date >= '2025-09-01'
 GROUP BY d.year, d.month
 ORDER BY d.year, d.month;
 
--- Q8 (US-4): freshness of each indicator
+-- Q8 (US-4): freshness of each indicator, with an OK/STALE flag
 SELECT
     i.indicator_name,
     i.frequency,
     MAX(d.full_date) AS latest_date,
-    DATEDIFF(day, MAX(d.full_date), CAST(GETDATE() AS DATE)) AS days_old
+    DATEDIFF(day, MAX(d.full_date), CAST(GETDATE() AS DATE)) AS days_old,
+    CASE
+        WHEN i.frequency = 'Daily'   AND DATEDIFF(day, MAX(d.full_date), CAST(GETDATE() AS DATE)) > 5  THEN 'STALE'
+        WHEN i.frequency = 'Monthly' AND DATEDIFF(day, MAX(d.full_date), CAST(GETDATE() AS DATE)) > 80 THEN 'STALE'
+        ELSE 'OK'
+    END AS status
 FROM fact_indicator f
 JOIN dim_date d      ON f.date_key = d.date_key
 JOIN dim_indicator i ON f.indicator_code = i.indicator_code
